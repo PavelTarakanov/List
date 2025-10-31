@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "list.h"//спросить про стрелки и про system
+#include <assert.h>
+#include "list.h"
+#include "file_using.h"
 
 int main(int argc, char* argv[])
 {
@@ -12,36 +14,39 @@ int main(int argc, char* argv[])
     if (list_init(&list, START_LIST_SIZE))
         return 1;
 
-    list_insert(&list, 10, 0, argv);
-    list_insert(&list, 20, 1, argv);
-    list_insert(&list, 30, 2, argv);
-    list_insert(&list, 40, 3, argv);
-    list_insert(&list, 50, 4, argv);
-    list_insert(&list, 45, 3, argv);
-    list_delete(&list, 2, argv);
+    list_insert(&list, 10, 0, argv[1]);
+    list_insert(&list, 20, 1, argv[1]);
+    list_insert(&list, 30, 2, argv[1]);
+    list_insert(&list, 40, 3, argv[1]);
+    list_insert(&list, 50, 4, argv[1]);
+    list_insert(&list, 45, 3, argv[1]);
+    list_delete(&list, 2, argv[1]);
 
-    list_dump(&list, argv);
+    list_dump(&list, argv[1]);
 
     list_free(&list);
 
     return 0;
 }
 
-int list_insert(list_t* list, int value, int elem, char** argv)
+int list_insert(list_t* list, int value, int elem, char* dump_file_name)
 {
+    assert(list);
+    assert(dump_file_name);
+
     if (elem > list->list_len)
     {
         printf("Too big element number!\n");
         return 0;
     }
-    else if (list->data[elem] == NO_ELEM)
+    else if (list->elem_status[elem] == 0)
     {
         printf("Can't insert after free element!\n");
         return 0;
     }
 
     if (list_verify(list))
-        list_dump(list, argv);
+        list_dump(list, dump_file_name);
 
     int free_number = list->free_head;
 
@@ -49,48 +54,56 @@ int list_insert(list_t* list, int value, int elem, char** argv)
     list->data[free_number] = value;
     list->next[free_number] = list->next[elem];
     list->prev[free_number] = elem;
+    list->elem_status[free_number] = 1;
     list->next[elem] = free_number;
     list->prev[list->next[free_number]] = free_number;
 
     if (list_verify(list))
-        list_dump(list, argv);
+        list_dump(list, dump_file_name);
 
     return free_number;
 }
 
-int list_delete(list_t* list, int elem, char** argv)
+int list_delete(list_t* list, int elem, char* dump_file_name)
 {
+    assert(list);
+    assert(dump_file_name);
+
     if (elem > list->list_len)
     {
         printf("Too big element number!\n");
         return 0;
     }
-    else if (list->data[elem] == NO_ELEM)
+    else if (list->elem_status[elem] == 0)
     {
         printf("Can't delete free element!\n");
         return 0;
     }
 
     if (list_verify(list))
-        list_dump(list, argv);
+        list_dump(list, dump_file_name);
 
-    list->data[elem] = NO_ELEM;
+    list->elem_status[elem] = 0;
     list->next[list->prev[elem]] = list->next[elem];
     list->prev[list->next[elem]] = list->prev[elem];
     list->next[elem] = list->free_head;
+    list->elem_status[elem] = 0;
     list->free_head = elem;
 
     if (list_verify(list))
-        list_dump(list, argv);
+        list_dump(list, dump_file_name);
 
     return 1;
 }
 
-void list_dump(list_t* list, char** argv)
+void list_dump(list_t* list, char* dump_file_name)
 {
+    assert(list);
+    assert(dump_file_name);
+
     FILE* dump_address = NULL;
 
-    if (check_file_opening(argv[1], &dump_address, "w"))
+    if (check_file_opening(dump_file_name, &dump_address, "w"))
         return;
 
     /*printf("list->data[%p]\n", list->data);
@@ -108,21 +121,20 @@ void list_dump(list_t* list, char** argv)
     printf("list->free_head = %d\n"
            "list->list_len = %d\n", list->free_head, list->list_len);*/
 
-
     fprintf(dump_address, "digraph{\n"
-                          "    rankdir=LR\n");
+                          "\trankdir=LR\n");
     for (int i = 0; i < list->list_len; i++)
     {
-        if (list->data[i] == NO_ELEM)
-            fprintf(dump_address, "    %d[color=\"red\", style=\"filled\",fillcolor=\"lightgrey\", shape = record, label=\"index = %d | value = %s | {prev = %d | next = %d}\"];\n",
+        if (list->elem_status[i] == 0)
+            fprintf(dump_address, "\t%d[color=\"black\", style=\"filled\",fillcolor=\"lightgrey\", shape = record, label=\"index = %d | value = %s | {prev = %d | next = %d}\"];\n",
                 i, i, "NO_ELEM", list->prev[i], list->next[i]);
         else
-            fprintf(dump_address, "    %d[color=\"green\", style=\"filled\",fillcolor=\"lightgrey\", shape = record, label=\"index = %d | value = %d | {prev = %d | next = %d}\"];\n",
+            fprintf(dump_address, " \t%d[color=\"green\", style=\"filled\",fillcolor=\"lightgrey\", shape = record, label=\"index = %d | value = %d | {prev = %d | next = %d}\"];\n",
                 i, i, list->data[i], list->prev[i], list->next[i]);
-        if (list->data[i] != NO_ELEM)
+        if (list->elem_status[i] == 1)
         {
-            fprintf(dump_address, "    %d -> %d[color=\"blue\"]\n", i, list->next[i]);
-            fprintf(dump_address, "    %d -> %d[color=\"red\"]\n", i, list->prev[i]);
+            fprintf(dump_address, "\t%d -> %d[color=\"blue\"]\n", i, list->next[i]);
+            fprintf(dump_address, "\t%d -> %d[color=\"red\"]\n", i, list->prev[i]);
         }
     }
 
@@ -135,44 +147,51 @@ void list_dump(list_t* list, char** argv)
     fprintf(dump_address, "[color = \"green\"]\n");
 
     fprintf(dump_address, "}");
-    //system("dot dump.txt -T png -o dump.png");
 
     if (check_file_closing(dump_address))
         return;
+
+    system("dot dump.txt -T png -o dump.png");
+
     return;
 }
 
-
 bool list_init(list_t* list, int list_size)
 {
+    assert(list);
+
     list->free_head = 1;
     list->list_len = list_size;
     list->data = (int*) calloc(list_size, sizeof(int));
     list->next = (int*) calloc(list_size, sizeof(int));
     list->prev = (int*) calloc(list_size, sizeof(int));
+    list->elem_status = (int*) calloc(list_size, sizeof(int));
     if (list->data == NULL || list->next == NULL || list->prev == NULL)
         return true;
     list->data[0] = LEFT_BIRD;
     list->next[0] = 0;
     list->prev[0] = 0;
+    list->elem_status[0] = 1;
     for (int i = 1; i < list_size; i++)
     {
-        list->data[i] = NO_ELEM;
+        list->data[i] = 0;
         list->next[i] = i+1;
         list->prev[i] = -1;
+        list->elem_status[i] = 0;
     }
     list->next[list_size-1] = 0;
 
     return 0;
 }
 
-bool list_free(list_t* list)
+void list_free(list_t* list)
 {
     free(list->data);
     free(list->next);
     free(list->prev);
+    free(list->elem_status);
 
-    return 0;
+    return;
 }
 
 int list_verify(list_t* list)
