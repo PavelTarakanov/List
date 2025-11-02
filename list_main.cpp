@@ -1,12 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 #include "list.h"
 #include "file_using.h"
 
 int main(int argc, char* argv[])
 {
     list_t list = {};
+    int dump_number = 0;
 
     if (check_file_founded(argc))
         return 1;
@@ -14,94 +16,98 @@ int main(int argc, char* argv[])
     if (list_init(&list, START_LIST_SIZE))
         return 1;
 
-    list_insert(&list, 10, 0, argv[1]);
-    list_insert(&list, 20, 1, argv[1]);
-    list_insert(&list, 30, 2, argv[1]);
-    list_insert(&list, 40, 3, argv[1]);
-    list_insert(&list, 50, 4, argv[1]);
-    list_insert(&list, 45, 3, argv[1]);
-    list_delete(&list, 2, argv[1]);
+    list_insert(&list, 10, 0, argv[1], &dump_number);
+    list_insert(&list, 20, 1, argv[1], &dump_number);
+    list_insert(&list, 30, 2, argv[1], &dump_number);
+    list_insert(&list, 40, 3, argv[1], &dump_number);
+    list_insert(&list, 50, 4, argv[1], &dump_number);
+    list_insert(&list, 45, 3, argv[1], &dump_number);
+    list_delete(&list, 2, argv[1], &dump_number);
 
-    list_dump(&list, argv[1]);
+    list_dump(&list, argv[1], &dump_number);
 
     list_free(&list);
 
     return 0;
 }
 
-int list_insert(list_t* list, int value, int elem, char* dump_file_name)
+int list_insert(list_t* list, int value, int elem, char* dump_file_name, int* dump_number)
 {
     assert(list);
     assert(dump_file_name);
+    assert(dump_number);
 
     if (elem > list->list_len)
     {
         printf("Too big element number!\n");
         return 0;
     }
-    else if (list->elem_status[elem] == 0)
+    else if (list->list_array[elem].elem_status == 0)
     {
         printf("Can't insert after free element!\n");
         return 0;
     }
 
-    if (list_verify(list))
-        list_dump(list, dump_file_name);
+    list_dump(list, dump_file_name, dump_number);
 
     int free_number = list->free_head;
 
-    list->free_head = list->next[free_number];
-    list->data[free_number] = value;
-    list->next[free_number] = list->next[elem];
-    list->prev[free_number] = elem;
-    list->elem_status[free_number] = 1;
-    list->next[elem] = free_number;
-    list->prev[list->next[free_number]] = free_number;
+    list->free_head = list->list_array[free_number].next;
+    list->list_array[free_number].data = value;
+    list->list_array[free_number].next = list->list_array[elem].next;
+    list->list_array[free_number].prev = elem;
+    list->list_array[free_number].elem_status = 1;
+    list->list_array[elem].next = free_number;
+    list->list_array[list->list_array[free_number].next].prev = free_number;
 
-    if (list_verify(list))
-        list_dump(list, dump_file_name);
+    list_dump(list, dump_file_name, dump_number);
 
     return free_number;
 }
 
-int list_delete(list_t* list, int elem, char* dump_file_name)
+int list_delete(list_t* list, int elem, char* dump_file_name, int* dump_number)
 {
     assert(list);
     assert(dump_file_name);
+    assert(dump_number);
 
     if (elem > list->list_len)
     {
         printf("Too big element number!\n");
         return 0;
     }
-    else if (list->elem_status[elem] == 0)
+    else if (list->list_array[elem].elem_status == 0)
     {
         printf("Can't delete free element!\n");
         return 0;
     }
 
-    if (list_verify(list))
-        list_dump(list, dump_file_name);
+    list_dump(list, dump_file_name, dump_number);
 
-    list->elem_status[elem] = 0;
-    list->next[list->prev[elem]] = list->next[elem];
-    list->prev[list->next[elem]] = list->prev[elem];
-    list->next[elem] = list->free_head;
-    list->elem_status[elem] = 0;
+    list->list_array[elem].elem_status = 0;
+    list->list_array[list->list_array[elem].prev].next = list->list_array[elem].next;
+    list->list_array[list->list_array[elem].next].prev = list->list_array[elem].prev;
+    list->list_array[elem].next = list->free_head;
+    list->list_array[elem].elem_status = 0;
     list->free_head = elem;
 
-    if (list_verify(list))
-        list_dump(list, dump_file_name);
+    list_dump(list, dump_file_name, dump_number);
 
     return 1;
 }
 
-void list_dump(list_t* list, char* dump_file_name)
+void list_dump(list_t* list, char* dump_file_name, int* dump_number)
 {
     assert(list);
     assert(dump_file_name);
+    assert(dump_number);
 
     FILE* dump_address = NULL;
+    char* str_dump_number = (char*) calloc(1000, sizeof(char));
+    char* command = (char*) calloc(1000, sizeof(char));
+
+    command = strcpy(command, "dot dump.txt -T png -o dump.png");
+    str_dump_number = do_str_number(str_dump_number, *dump_number);
 
     if (check_file_opening(dump_file_name, &dump_address, "w"))
         return;
@@ -119,29 +125,29 @@ void list_dump(list_t* list, char* dump_file_name)
         printf("list->prev[%d] = %d\n", i, list->prev[i]);
 
     printf("list->free_head = %d\n"
-           "list->list_len = %d\n", list->free_head, list->list_len);*/
-
+           "list->list_len = %d\n", list->free_head, list->list_len);
+    */
     fprintf(dump_address, "digraph{\n"
                           "\trankdir=LR\n");
     for (int i = 0; i < list->list_len; i++)
     {
-        if (list->elem_status[i] == 0)
+        if (list->list_array[i].elem_status == 0)
             fprintf(dump_address, "\t%d[color=\"black\", style=\"filled\",fillcolor=\"lightgrey\", shape = record, label=\"index = %d | value = %s | {prev = %d | next = %d}\"];\n",
-                i, i, "NO_ELEM", list->prev[i], list->next[i]);
+                i, i, "NO_ELEM", list->list_array[i].prev, list->list_array[i].next);
         else
             fprintf(dump_address, " \t%d[color=\"green\", style=\"filled\",fillcolor=\"lightgrey\", shape = record, label=\"index = %d | value = %d | {prev = %d | next = %d}\"];\n",
-                i, i, list->data[i], list->prev[i], list->next[i]);
-        if (list->elem_status[i] == 1)
+                i, i, list->list_array[i].data, list->list_array[i].prev, list->list_array[i].next);
+        if (list->list_array[i].elem_status == 1)
         {
-            fprintf(dump_address, "\t%d -> %d[color=\"blue\"]\n", i, list->next[i]);
-            fprintf(dump_address, "\t%d -> %d[color=\"red\"]\n", i, list->prev[i]);
+            fprintf(dump_address, "\t%d -> %d[color=\"blue\"]\n", i, list->list_array[i].next);
+            fprintf(dump_address, "\t%d -> %d[color=\"red\"]\n", i, list->list_array[i].prev);
         }
     }
 
-    for (int i = list->free_head; i != 0; i = list->next[i])
+    for (int i = list->free_head; i != 0; i = list->list_array[i].next)
     {
         fprintf(dump_address,"%d ", i);
-        if (list->next[i] != 0)
+        if (list->list_array[i].next != 0)
             fprintf(dump_address, "-> ");
     }
     fprintf(dump_address, "[color = \"green\"]\n");
@@ -151,45 +157,50 @@ void list_dump(list_t* list, char* dump_file_name)
     if (check_file_closing(dump_address))
         return;
 
-    system("dot dump.txt -T png -o dump.png");
+    str_dump_number = strcat(str_dump_number, ".png");//TODO strncat
+    command = strcat(command, str_dump_number);
+    system(command);//TODO check return system
+
+    free(str_dump_number);
+    free(command);
+
+    (*dump_number)++;
 
     return;
 }
 
-bool list_init(list_t* list, int list_size)
+bool list_init(list_t* list, int list_size)//TODO dump_number in structure???
 {
     assert(list);
 
     list->free_head = 1;
     list->list_len = list_size;
-    list->data = (int*) calloc(list_size, sizeof(int));
-    list->next = (int*) calloc(list_size, sizeof(int));
-    list->prev = (int*) calloc(list_size, sizeof(int));
-    list->elem_status = (int*) calloc(list_size, sizeof(int));
-    if (list->data == NULL || list->next == NULL || list->prev == NULL)
+    list->list_array = (list_array_t*) calloc(list_size, sizeof(list_array_t));
+
+    if (list->list_array == NULL)
         return true;
-    list->data[0] = LEFT_BIRD;
-    list->next[0] = 0;
-    list->prev[0] = 0;
-    list->elem_status[0] = 1;
+
+    list->list_array[0].data = LEFT_BIRD;
+    list->list_array[0].next = 0;
+    list->list_array[0].prev = 0;
+    list->list_array[0].elem_status = 1;
+
     for (int i = 1; i < list_size; i++)
     {
-        list->data[i] = 0;
-        list->next[i] = i+1;
-        list->prev[i] = -1;
-        list->elem_status[i] = 0;
+        list->list_array[i].data = 0;
+        list->list_array[i].next = i+1;
+        list->list_array[i].prev = -1;
+        list->list_array[i].elem_status = 0;
     }
-    list->next[list_size-1] = 0;
+
+    list->list_array[list_size-1].next = 0;
 
     return 0;
 }
 
 void list_free(list_t* list)
 {
-    free(list->data);
-    free(list->next);
-    free(list->prev);
-    free(list->elem_status);
+    free(list->list_array);
 
     return;
 }
@@ -202,17 +213,44 @@ int list_verify(list_t* list)
     if (list->list_len < 0)
         return LIST_LEN_ERROR;
 
-    if (list->data[0] != LEFT_BIRD)
+    if (list->list_array[0].data != LEFT_BIRD)
         return LEFT_BIRD_ERROR;
 
     for (int i = 0; i < list->list_len; i++)
     {
-        if (list->prev[list->next[i]] != i)
+        if (list->list_array[list->list_array[i].next].prev != i)
             return ACCORDANCE_ERROR;
 
-        if (list->next[list->prev[i]] != i)
+        if (list->list_array[list->list_array[i].prev].next != i)
             return ACCORDANCE_ERROR;
     }
 
     return NO_ERROR;
 }
+
+char* do_str_number(char* str, int number)//TODO snprintf
+{
+    int i = 0;
+    char reverse_str[10] = {0};
+
+    //printf("number = %d\n", number);
+
+    while (number > 9)
+    {
+        reverse_str[i] = (char) (number % 10) + '0';
+        number = number/10;
+        i++;
+    }
+    reverse_str[i] = (char) number + '0';
+
+    //printf("reverse_str = %s\n", reverse_str);
+
+    for (int j = i; j >= 0; j--)
+    {
+        str[i-j] = reverse_str[j];
+    }
+    str[i+1] = '\0';
+    //printf("str = %s\n", str);
+    return str;
+}
+
