@@ -1,0 +1,151 @@
+<pre>
+<h1>Dumps</h1><h3> DUMP <font color=red> BEFORE </font> INSERT 10 AFTER NUMBER 0</h3>list->array[0x50e000000040]
+data:	    CANARY	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	
+next:	         0	         2	         3	         4	         5	         6	         7	         8	         9	         0	
+prev:	         0	        -1	        -1	        -1	        -1	        -1	        -1	        -1	        -1	        -1	
+list->free_head = 1
+list->list_len = 10
+IMAGE:
+<img src=dump_0.png width = 700px>
+
+
+<h3> DUMP <font color=red> AFTER </font> INSERT 10 AFTER NUMBER 0</h3>list->array[0x50e000000040]
+data:	    CANARY	        10	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	
+next:	         1	         0	         3	         4	         5	         6	         7	         8	         9	         0	
+prev:	         1	         0	        -1	        -1	        -1	        -1	        -1	        -1	        -1	        -1	
+list->free_head = 2
+list->list_len = 10
+IMAGE:
+<img src=dump_1.png width = 700px>
+
+
+<h3> DUMP <font color=red> BEFORE </font> INSERT 20 AFTER NUMBER 1</h3>list->array[0x50e000000040]
+data:	    CANARY	        10	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	
+next:	         1	         0	         3	         4	         5	         6	         7	         8	         9	         0	
+prev:	         1	         0	        -1	        -1	        -1	        -1	        -1	        -1	        -1	        -1	
+list->free_head = 2
+list->list_len = 10
+IMAGE:
+<img src=dump_2.png width = 700px>
+
+
+<h3> DUMP <font color=red> AFTER </font> INSERT 20 AFTER NUMBER 1</h3>list->array[0x50e000000040]
+data:	    CANARY	        10	        20	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	
+next:	         1	         2	         0	         4	         5	         6	         7	         8	         9	         0	
+prev:	         2	         0	         1	        -1	        -1	        -1	        -1	        -1	        -1	        -1	
+list->free_head = 3
+list->list_len = 10
+IMAGE:
+<img src=dump_3.png width = 700px>
+
+
+<h3> DUMP <font color=red> BEFORE </font> INSERT 30 AFTER NUMBER 2</h3>list->array[0x50e000000040]
+data:	    CANARY	        10	        20	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	
+next:	         1	         2	         0	         4	         5	         6	         7	         8	         9	         0	
+prev:	         2	         0	         1	        -1	        -1	        -1	        -1	        -1	        -1	        -1	
+list->free_head = 3
+list->list_len = 10
+IMAGE:
+<img src=dump_4.png width = 700px>
+
+
+<h3> DUMP <font color=red> AFTER </font> INSERT 30 AFTER NUMBER 2</h3>list->array[0x50e000000040]
+data:	    CANARY	        10	        20	        30	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	
+next:	         1	         2	         3	         0	         5	         6	         7	         8	         9	         0	
+prev:	         3	         0	         1	         2	        -1	        -1	        -1	        -1	        -1	        -1	
+list->free_head = 4
+list->list_len = 10
+IMAGE:
+<img src=dump_5.png width = 700px>
+
+
+<h3> DUMP <font color=red> BEFORE </font> INSERT 40 AFTER NUMBER 3</h3>list->array[0x50e000000040]
+data:	    CANARY	        10	        20	        30	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	
+next:	         1	         2	         3	         0	         5	         6	         7	         8	         9	         0	
+prev:	         3	         0	         1	         2	        -1	        -1	        -1	        -1	        -1	        -1	
+list->free_head = 4
+list->list_len = 10
+IMAGE:
+<img src=dump_6.png width = 700px>
+
+
+<h3> DUMP <font color=red> AFTER </font> INSERT 40 AFTER NUMBER 3</h3>list->array[0x50e000000040]
+data:	    CANARY	        10	        20	        30	        40	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	
+next:	         1	         2	         3	         4	         0	         6	         7	         8	         9	         0	
+prev:	         4	         0	         1	         2	         3	        -1	        -1	        -1	        -1	        -1	
+list->free_head = 5
+list->list_len = 10
+IMAGE:
+<img src=dump_7.png width = 700px>
+
+
+<h3> DUMP <font color=red> BEFORE </font> INSERT 50 AFTER NUMBER 4</h3>list->array[0x50e000000040]
+data:	    CANARY	        10	        20	        30	        40	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	
+next:	         1	         2	         3	         4	         0	         6	         7	         8	         9	         0	
+prev:	         4	         0	         1	         2	         3	        -1	        -1	        -1	        -1	        -1	
+list->free_head = 5
+list->list_len = 10
+IMAGE:
+<img src=dump_8.png width = 700px>
+
+
+<h3> DUMP <font color=red> AFTER </font> INSERT 50 AFTER NUMBER 4</h3>list->array[0x50e000000040]
+data:	    CANARY	        10	        20	        30	        40	        50	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	
+next:	         1	         2	         3	         4	         5	         0	         7	         8	         9	         0	
+prev:	         5	         0	         1	         2	         3	         4	        -1	        -1	        -1	        -1	
+list->free_head = 6
+list->list_len = 10
+IMAGE:
+<img src=dump_9.png width = 700px>
+
+
+<h3> DUMP <font color=red> BEFORE </font> INSERT 45 AFTER NUMBER 3</h3>list->array[0x50e000000040]
+data:	    CANARY	        10	        20	        30	        40	        50	   NO_ELEM	   NO_ELEM	   NO_ELEM	   NO_ELEM	
+next:	         1	         2	         3	         4	         5	         0	         7	         8	         9	         0	
+prev:	         5	         0	         1	         2	         3	         4	        -1	        -1	        -1	        -1	
+list->free_head = 6
+list->list_len = 10
+IMAGE:
+<img src=dump_10.png width = 700px>
+
+
+<h3> DUMP <font color=red> AFTER </font> INSERT 45 AFTER NUMBER 3</h3>list->array[0x50e000000040]
+data:	    CANARY	        10	        20	        30	        40	        50	        45	   NO_ELEM	   NO_ELEM	   NO_ELEM	
+next:	         1	         2	         3	         6	         5	         0	         4	         8	         9	         0	
+prev:	         5	         0	         1	         2	         6	         4	         3	        -1	        -1	        -1	
+list->free_head = 7
+list->list_len = 10
+IMAGE:
+<img src=dump_11.png width = 700px>
+
+
+<h3> DUMP <font color=red> BEFORE </font> DELETE NUMBER 2</h3>list->array[0x50e000000040]
+data:	    CANARY	        10	        20	        30	        40	        50	        45	   NO_ELEM	   NO_ELEM	   NO_ELEM	
+next:	         1	         2	         3	         6	         5	         0	         4	         8	         9	         0	
+prev:	         5	         0	         1	         2	         6	         4	         3	        -1	        -1	        -1	
+list->free_head = 7
+list->list_len = 10
+IMAGE:
+<img src=dump_12.png width = 700px>
+
+
+<h3> DUMP <font color=red> AFTER </font> DELETE NUMBER 2</h3>list->array[0x50e000000040]
+data:	    CANARY	        10	   NO_ELEM	        30	        40	        50	        45	   NO_ELEM	   NO_ELEM	   NO_ELEM	
+next:	         1	         3	         7	         6	         5	         0	         4	         8	         9	         0	
+prev:	         5	         0	         1	         1	         6	         4	         3	        -1	        -1	        -1	
+list->free_head = 2
+list->list_len = 10
+IMAGE:
+<img src=dump_13.png width = 700px>
+
+
+list->array[0x50e000000040]
+data:	    CANARY	        10	   NO_ELEM	        30	        40	        50	        45	   NO_ELEM	   NO_ELEM	   NO_ELEM	
+next:	         1	         3	         7	         6	         5	         0	         4	         8	         9	         0	
+prev:	         5	         0	         1	         1	         6	         4	         3	        -1	        -1	        -1	
+list->free_head = 2
+list->list_len = 10
+IMAGE:
+<img src=dump_14.png width = 700px>
+
+

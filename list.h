@@ -3,6 +3,7 @@
 
 const int LEFT_BIRD = 2147483647;
 const int START_LIST_SIZE = 10;
+const int MAX_COMMAND_SIZE = 1000;
 
 struct list_array_t {int data;
                      int next;
@@ -12,6 +13,7 @@ struct list_array_t {int data;
 struct list_t {list_array_t* list_array;
                int free_head;
                int list_len;
+               int dump_number;
 };
 
 enum list_errors{
@@ -20,15 +22,18 @@ enum list_errors{
     LIST_LEN_ERROR = 2,
     LEFT_BIRD_ERROR = 3,
     ACCORDANCE_ERROR = 4,
+    FILE_OPENING_ERROR = 5,
+    FILE_CLOSING_ERROR = 6,
+    ERROR_WHILE_MAKING_GRAPH = 7,
 };
 
 bool list_init(list_t* list, int list_size);
 void list_free(list_t* list);
 int list_verify(list_t* list);
-void list_dump(list_t* list, char* dump_file_name, int* dump_number);
-int list_delete(list_t* list, int elem, char* dump_file_name, int* dump_number);
-int list_insert(list_t* list, int value, int elem, char* dump_file_name, int* dump_number);
+int list_dump(list_t* list, char* dump_file_name, FILE* html_dump_address);
+int list_delete(list_t* list, int elem, char* dump_file_name, FILE* html_dump_address);
+int list_insert(list_t* list, int value, int elem, char* dump_file_name, FILE* html_dump_address);
 
-char* do_str_number(char* str, int number);
+void start_html_dump(FILE* html_dump_address);
 
 #endif //LIST_H
