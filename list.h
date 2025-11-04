@@ -25,9 +25,11 @@ enum list_errors{
     FILE_OPENING_ERROR = 5,
     FILE_CLOSING_ERROR = 6,
     ERROR_WHILE_MAKING_GRAPH = 7,
+    ALLOCATION_ERROR = 8,
 };
 
 bool list_init(list_t* list, int list_size);
+int list_upgrade(list_t* list);
 void list_free(list_t* list);
 int list_verify(list_t* list);
 int list_dump(list_t* list, char* dump_file_name, FILE* html_dump_address);
