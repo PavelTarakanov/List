@@ -13,6 +13,7 @@ struct list_array_t {int data;
 struct list_t {list_array_t* list_array;
                int free_head;
                unsigned int list_len;
+               unsigned int real_list_len;
                unsigned int dump_number;
 };
 

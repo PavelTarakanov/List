@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
     if (list_init(&list, START_LIST_SIZE))
         return 1;
 
-    list_insert(&list, 10, 0, argv[1], html_dump_address);
+    list_insert(&list, 10, list.real_list_len, argv[1], html_dump_address);
     list_insert(&list, 20, 1, argv[1], html_dump_address);
     list_insert(&list, 30, 2, argv[1], html_dump_address);
     list_insert(&list, 40, 3, argv[1], html_dump_address);

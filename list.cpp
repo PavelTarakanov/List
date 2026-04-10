@@ -41,6 +41,7 @@ int list_insert(list_t* list, int value, unsigned int elem, char* const dump_fil
     list->list_array[free_number].elem_status = true;
     list->list_array[elem].next = free_number;
     list->list_array[list->list_array[free_number].next].prev = free_number;
+    list->real_list_len++;
 
     fprintf(html_dump_address, "<h3> DUMP <font color=red> AFTER </font> INSERT %d AFTER NUMBER %d</h3>",
             value, elem);
@@ -79,6 +80,7 @@ int list_delete(list_t* list, unsigned int elem, char* const dump_file_name, FIL
     list->list_array[list->list_array[elem].next].prev = list->list_array[elem].prev;
     list->list_array[elem].next = list->free_head;
     list->free_head = elem;
+    list->real_list_len--;
 
     fprintf(html_dump_address, "<h3> DUMP <font color=red> AFTER </font> DELETE NUMBER %d</h3>",
             elem);
@@ -178,6 +180,7 @@ bool list_init(list_t* list, unsigned int list_size)
 
     list->free_head = 1;
     list->list_len = list_size;
+    list->real_list_len = 0;
     list->list_array = (list_array_t*) calloc(list_size, sizeof(list_array_t));
 
     if (list->list_array == NULL)
