@@ -5,7 +5,7 @@ A robust implementation of a doubly linked list in C using an array structure, e
 
 ### Structure Visualization
 
-![List Structure](dump_10.png)
+![List Structure](dump_example.png)
 
 ### Features
 
